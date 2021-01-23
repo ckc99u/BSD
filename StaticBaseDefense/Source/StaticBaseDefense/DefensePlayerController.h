@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "StaticBaseDefense/BSDPawn.h"
 #include "StaticBaseDefense/PlayerBase.h"
 #include "DefensePlayerController.generated.h"
 
@@ -21,6 +22,7 @@ public:
 	~ADefensePlayerController();
 
 protected:
+	virtual void SetPawn(APawn* InPawn) override;
 	virtual void BeginPlay() override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, class AActor* DamageCauser) override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason)override;

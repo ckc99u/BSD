@@ -11,46 +11,46 @@ ABSDPawn::ABSDPawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	// Create Components Initialize
-	Weapon = CreateDefaultSubobject<UStaticMeshComponent>("DefaultSceneRoot");
-	CameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
-	MainCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	m_weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>("DefaultSceneRoot");
+	m_cameraArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("m_cameraArm"));
+	m_camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	/*static ConstructorHelpers::FObjectFinder<UStaticMesh>mysphere(TEXT("StaticMesh'/Engine/BasicShapes/Sphere'"));
 
 	if (mysphere.Succeeded())
-		Weapon->SetStaticMesh(mysphere.Object);
+		m_weaponMesh->SetStaticMesh(mysphere.Object);
 
-	Weapon->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));*/
+	m_weaponMesh->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));*/
 	FVector currentLoc = GetActorLocation();
 	currentLoc.Z -= 50;
-	Weapon->SetWorldLocation(currentLoc);
-	RootComponent = Weapon;
-	CameraArm->SetupAttachment(Weapon);
+	m_weaponMesh->SetWorldLocation(currentLoc);
+	RootComponent = m_weaponMesh;
+	m_cameraArm->SetupAttachment(m_weaponMesh);
 
 
-	CameraArm->TargetArmLength = 30.0f;
-	CameraArm->bEnableCameraLag = true;
-	CameraArm->bUsePawnControlRotation = true;
-	CameraArm->CameraLagSpeed = 2.0f;
+	m_cameraArm->TargetArmLength = 30.0f;
+	m_cameraArm->bEnableCameraLag = true;
+	m_cameraArm->bUsePawnControlRotation = true;
+	m_cameraArm->CameraLagSpeed = 2.0f;
 
 
-	MainCamera->SetupAttachment(CameraArm, USpringArmComponent::SocketName);
-	MainCamera->SetRelativeLocation(FVector(-50.0f, 0.0f, 0.0f));
-	MainCamera->bUsePawnControlRotation = false;
-	
+	m_camera->SetupAttachment(m_cameraArm, USpringArmComponent::SocketName);
+	m_camera->SetRelativeLocation(FVector(-50.0f, 0.0f, 0.0f));
+	m_camera->bUsePawnControlRotation = false;
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
 
 
 void ABSDPawn::PreInitializeComponents()
 {
-	manager = new FWeaponManager(20);
-	manager->Initialize(GetWorld());
+	//m_fweaponManager = new FWeaponManager(20);
+	//m_fweaponManager->Initialize(GetWorld());
 }
 
 void ABSDPawn::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
-	delete manager;
-	manager = nullptr;
+	delete m_fweaponManager;
+	m_fweaponManager = nullptr;
 }
 
 // Called to bind functionality to input
@@ -69,16 +69,20 @@ void ABSDPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ABSDPawn::Fire()
 {
 
-	FVector CameraLocation;
-	FRotator CameraRotation;
-	GetActorEyesViewPoint(CameraLocation, CameraRotation);
+	FVector cameraLoc;
+	FRotator cameraRot;
+	GetActorEyesViewPoint(cameraLoc, cameraRot);
 	// transform muzzleoffset from camera space to world space
-	FVector MuzzleLocation = CameraLocation + FTransform(CameraRotation).TransformVector(Offset);
-	FRotator MuzzleRotation = CameraRotation;
-	MuzzleRotation.Pitch += -5.0f;
+	FVector muzzleLoc = cameraLoc + FTransform(cameraRot).TransformVector(m_Offset);
+	FRotator muzzleRot = cameraRot;
+	muzzleRot.Pitch += -5.0f;
 
-	manager->Shoot(MuzzleRotation.Vector(), MuzzleLocation, MuzzleRotation);
-	
+	m_fweaponManager->Shoot(muzzleRot.Vector(), muzzleLoc, muzzleRot);
+	if (!ensure(m_projectileBP)) return;
+	auto projectile = GetWorld()->SpawnActor<AProjectile>(
+		m_projectileBP, muzzleLoc, muzzleRot
+		);//use get sockket loc?
+	projectile->FireDirection(muzzleRot.Vector(), muzzleLoc);
 	float FinalRecoil = FMath::FRandRange(-1.0f, -1.25f);
 	AddControllerYawInput(FinalRecoil);
 

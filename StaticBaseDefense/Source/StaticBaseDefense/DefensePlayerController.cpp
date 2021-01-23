@@ -12,14 +12,27 @@ ADefensePlayerController::~ADefensePlayerController(){}
 
 
 
+void ADefensePlayerController::SetPawn(APawn* InPawn)
+{
+	Super::SetPawn(InPawn);
+	if (InPawn)
+	{
+		auto myPawn = Cast<ABSDPawn>(InPawn);
+		if (!myPawn) {
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, "cast fail");
+			return;
+		}
+	}
+}
+
 void ADefensePlayerController::BeginPlay()
 {
 	canvasHealth = FText::FromString(FString::FromInt(health));
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
-	playerPos.Z -= 100;
-	Base = GetWorld()->SpawnActor<APlayerBase>(playerPos, FRotator(0,0,0),SpawnInfo );
+	//FVector playerPos = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+	//playerPos.Z -= 100;
+	//Base = GetWorld()->SpawnActor<APlayerBase>(playerPos, FRotator(0,0,0),SpawnInfo );
 	GetWorld()->GetTimerManager().SetTimer(InOutHandle, this, &ADefensePlayerController::timerCounter, 1.0, true, 0);
 }
 

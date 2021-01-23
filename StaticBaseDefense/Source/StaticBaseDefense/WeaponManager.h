@@ -17,7 +17,7 @@ public:
 	void Initialize(UWorld* _w);//initialize weapons
 	void Update();
 	void Shoot(const FVector &_dir, const FVector &location, const FRotator &rot);
-	UPROPERTY(EditDefaultsOnly, Category = Weapon)
+	UPROPERTY(EditDefaultsOnly, Category = m_weaponMesh)
 		TSubclassOf<AWeaponBase> currentWeapon;
 private: 
 

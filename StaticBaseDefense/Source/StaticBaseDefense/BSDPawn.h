@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "StaticBaseDefense/Projectile.h"
 #include "StaticBaseDefense/WeaponManager.h"
 #include "GameFramework/Pawn.h"
 #include "BSDPawn.generated.h"
@@ -29,27 +30,31 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	UFUNCTION(BlueprintCallable)
 		void Fire();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void PitchCamera(float Axis);
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void YawCamera(float Axis);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector Offset = FVector(-50.0f, -20.0f, 0.0f);
+		FVector m_Offset = FVector(-50.0f, -20.0f, 0.0f);
+
+
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		class UStaticMeshComponent* Weapon;
+		class UStaticMeshComponent* m_weaponMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		class USpringArmComponent *CameraArm;
+		class USpringArmComponent *m_cameraArm;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-		class UCameraComponent* MainCamera;
+		class UCameraComponent* m_camera;
 
 
 	UPROPERTY()
-		FRotator CamerRotator;
-
-	FWeaponManager *manager;
-	FVector _dir;
+		FRotator m_rotCamera;
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<AProjectile> m_projectileBP;
+	FWeaponManager *m_fweaponManager;
 };

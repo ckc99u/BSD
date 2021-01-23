@@ -35,6 +35,7 @@ void AProjectile::FireDirection(const FVector & _targetPoint, const FVector & _s
 {
 
 	ProjectileMovement->SetVelocityInLocalSpace(FVector::ForwardVector * 4000.0f);
+	//ProjectileMovement->Velocity = 3000 * _targetPoint;
 	ProjectileMovement->Activate();
 }
 

@@ -39,9 +39,10 @@ void FWeaponManager::Update()
 
 void FWeaponManager::Shoot(const FVector& _dir,const FVector &location, const FRotator &rot)
 {
-	currentWeaponPtr = OutBullet();
-	currentWeaponPtr->Initialize(bulletParams);
-	currentWeaponPtr->FireDirection(_dir, location);
+	//currentWeaponPtr = OutBullet();
+	//currentWeaponPtr->Initialize(bulletParams);
+	//currentWeaponPtr->FireDirection(_dir, location);
+
 }
 
 void FWeaponManager::Insert(AWeaponBase * _obj)
